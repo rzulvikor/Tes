@@ -113,6 +113,58 @@ export function setAttendance(studentId: string, date: string, status: 'hadir' |
   return true;
 }
 
+export function updateAttendance(studentId: string, date: string, status: 'hadir' | 'sakit' | 'izin' | 'alpa'): boolean {
+  const attendance = getAttendance();
+  const existingIndex = attendance.findIndex(a => a.studentId === studentId && a.date === date);
+  
+  if (existingIndex === -1) {
+    return false; // No record to update
+  }
+  
+  attendance[existingIndex] = {
+    ...attendance[existingIndex],
+    status,
+    timestamp: new Date().toISOString(),
+  };
+  
+  localStorage.setItem(ATTENDANCE_KEY, JSON.stringify(attendance));
+  return true;
+}
+
+export function deleteAttendance(studentId: string, date: string): boolean {
+  const attendance = getAttendance();
+  const filtered = attendance.filter(a => !(a.studentId === studentId && a.date === date));
+  
+  if (filtered.length === attendance.length) {
+    return false;
+  }
+  
+  localStorage.setItem(ATTENDANCE_KEY, JSON.stringify(filtered));
+  return true;
+}
+
+export function getDailyRecap(month: string, year: number, className: string): Record<string, Record<string, string>> {
+  // Returns: { studentId: { date: status } }
+  const students = getStudentsByClass(className);
+  const attendance = getAttendance();
+  const recap: Record<string, Record<string, string>> = {};
+  
+  students.forEach(student => {
+    const studentAttendance = attendance.filter(a => {
+      if (a.studentId !== student.id) return false;
+      const d = new Date(a.date);
+      return (d.getMonth() + 1) === parseInt(month) && d.getFullYear() === year;
+    });
+    
+    recap[student.id] = {};
+    studentAttendance.forEach(a => {
+      recap[student.id][a.date] = a.status;
+    });
+  });
+  
+  return recap;
+}
+
 export function getSchoolInfo(): SchoolInfo {
   const data = localStorage.getItem(SCHOOL_KEY);
   return data ? JSON.parse(data) : defaultSchool;

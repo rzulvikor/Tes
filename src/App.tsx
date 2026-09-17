@@ -6,6 +6,7 @@ import QRCard from './pages/QRCard';
 import Attendance from './pages/Attendance';
 import QRScan from './pages/QRScan';
 import Recap from './pages/Recap';
+import DailyRecap from './pages/DailyRecap';
 import History from './pages/History';
 import Download from './pages/Download';
 import Settings from './pages/Settings';
@@ -21,6 +22,7 @@ function App() {
           <Route path="presensi" element={<Attendance />} />
           <Route path="scan-qr" element={<QRScan />} />
           <Route path="rekap" element={<Recap />} />
+          <Route path="rekap-harian" element={<DailyRecap />} />
           <Route path="riwayat" element={<History />} />
           <Route path="unduh" element={<Download />} />
           <Route path="pengaturan" element={<Settings />} />
